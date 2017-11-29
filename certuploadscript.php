@@ -23,6 +23,38 @@ if (isset($_POST['submit']))
 	$filesize = $_FILES["file"]["size"];
 	$allowed_file_types = array('.doc','.docx','.rtf','.pdf','.PDF','.jpg','.JPG','.JPEG','.png');
 
+	//START OF UPDATED FILE CHECKER
+	// first check if data exists with select query
+	$datum = $wpdb->get_results("SELECT * FROM $certdatabase WHERE cert_type LIKE '$cert' AND userid = '$uid'");
+	 if($wpdb->num_rows > 0) {
+	 echo "result exists";
+	 //BEGIN DELETING OF OLD ROWS FUNCTIONALITY HERE
+	// LOOP THROUGH SELECTED ROWS IN DATABASE AND GET VALUE FOR THE OLD FILENAME
+	foreach($datum as $datu){
+		$oldfilename = $datu->filename;
+		echo $oldfilename;
+
+		//NOW DELETE ACTUAL FILE FROM SERVER
+		$path= $_SERVER['DOCUMENT_ROOT'] ."/upload/certificates/$oldfilename"; 
+
+		echo $path;
+
+    if (file_exists($path)) {
+        unlink($path);
+        echo "Deleted File";
+    } else {
+        // File not found.
+        echo "File not found!";
+    }
+
+		}
+	 }
+	// if not exist in the database then insert it
+	else{
+	 echo "no results found";
+	}
+	//END OF UPDATED FILE CHECKER
+	
 	if (in_array($file_ext,$allowed_file_types) && ($filesize < 5000000))
 	{	
 		// Rename file
@@ -83,7 +115,7 @@ if (isset($_POST['submit']))
 				update_user_meta($uid, $fulldatemeta, $date); 
 
 							 
-            header( 'Location:'.$url ) ;
+          header( 'Location:'.$url ) ;
         	echo "File uploaded successfully.";
 		}
 	}

@@ -41,6 +41,11 @@ if (isset($_POST['submit']))
 
     if (file_exists($path)) {
         unlink($path);
+
+				$wpdb->query('DELETE  FROM '.$wpdb->prefix.'certdatabase
+               WHERE filename = "'.$oldfilename.'"');
+							 echo "Delete from database successful!";
+
         echo "Deleted File";
     } else {
         // File not found.
